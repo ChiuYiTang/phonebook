@@ -11,7 +11,9 @@
 entry *hashTable[MAX_TABLE_SIZE] = {NULL};
 entry *tableHead[MAX_TABLE_SIZE] = {NULL};
 #elif OPT == 2
-#define OUT_FILE "BST.txt"
+#define OUT_FILE "bst.txt"
+#elif OPT == 3
+#define OUT_FILE "bstbig.txt"
 #else
 #define OUT_FILE "orig.txt"
 #endif
@@ -100,21 +102,32 @@ int main(int argc, char *argv[])
 
 #ifndef OPT
     e = pHead;
+#elif OPT == 2 || OPT == 3
+    treeNode *root = BuildBST(&pHead, Length(pHead));
 #else
     unsigned int hashVal = BKDRHash(input);
     e = tableHead[hashVal];
 #endif
 
+#if OPT == 2 || OPT == 3
+    assert(findName(input, root) &&
+           "Did you implement findName() in " IMPL "?");
+    assert(0 == strcmp(findName(input, root)->lastName, "zyxel"));
+#else
     assert(findName(input, e) &&
            "Did you implement findName() in " IMPL "?");
     assert(0 == strcmp(findName(input, e)->lastName, "zyxel"));
-
+#endif
 #if defined(__GNUC__)
     __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
 #endif
     /* compute the execution time */
     clock_gettime(CLOCK_REALTIME, &start);
+#if OPT == 2 || OPT == 3
+    findName(input, root);
+#else
     findName(input, e);
+#endif
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time2 = diff_in_second(start, end);
 
